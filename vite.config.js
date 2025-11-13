@@ -17,7 +17,7 @@ export default defineConfig({
 	  proxy: {
          	"/api": {
 			changeOrigin: true,
-		target: "http://localhost:3000",
+		target: "https://c8492d42fa25.ngrok-free.app:3000",
 				secure: false,
 		},
 	  },
