@@ -1,5 +1,5 @@
 const originalFetch = window.fetch;      // save original fetch
-const API_BASE = import.meta.env.production.VITE_API_URL; // get base URL from env
+const API_BASE = import.meta.env.VITE_API_URL; // get base URL from env
 
 window.fetch = (input, init) => {
   if (typeof input === "string" && input.startsWith("/api")) {
