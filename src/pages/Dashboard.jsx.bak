@@ -1,0 +1,353 @@
+import React, { useEffect, useState } from "react";
+import { CheckCircleIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/solid";
+//[done] todo : line 136 - 138 jangan lupa tengok sini oi amiiruk boodohhh
+import SumShow from '../components/Sum'; // [FIX] React components must be capitalized (SumShow)
+//[done] todo_2 : buat API baru di habits dan tasks iaitu : /api/habits/summary dan /api/tasks/summary
+
+function getDayName(date) {
+  return date.toLocaleDateString("en-US", { weekday: "short" });
+}
+function getMonthName(date) {
+  return date.toLocaleDateString("en-US", { month: "short" });
+}
+
+export default function Dashboard() {
+  const [user, setUser] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date().toDateString());
+  const [habits, setHabits] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  // [FIX] Removed unused 'progress' state
+  const [showForm, setShowForm] = useState(null); // "habit" | "task" | null
+  const [inputValue, setInputValue] = useState("");
+  const [descValue, setDescValue] = useState(""); // [FIX] Added missing state for description
+
+  // Authenticate user
+  useEffect(() => {
+    fetch("/api/auth/me", { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => setUser(data || null))
+      .catch(() => setUser(null));
+  }, []);
+
+  // Load habits and tasks from backend
+  useEffect(() => {
+    if (!user) return;
+
+    // Habits
+    fetch("/api/habits/show", { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        setHabits(Array.isArray(data) ? data : []);
+      })
+      .catch(() => setHabits([]));
+
+    // Tasks
+    fetch("/api/tasks/show", { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        setTasks(Array.isArray(data) ? data : []);
+      })
+      .catch(() => setTasks([]));
+  }, [user, selectedDate]);
+
+  if (!user)
+    return <p className="text-center mt-20 text-white text-lg">Loading...</p>;
+
+  const handleAdd = (type) => {
+    if (!inputValue.trim()) return;
+
+    fetch(`/api/${type}/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      // [FIX] Body now correctly reads from state for both values
+      body: JSON.stringify({ title: inputValue, description: descValue, date: selectedDate }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        // Refetch data after adding
+        if (type === "habits") {
+          fetch("/api/habits/show", { credentials: "include" })
+            .then((res) => res.json())
+            .then(setHabits);
+        } else {
+          fetch("/api/tasks/show", { credentials: "include" })
+            .then((res) => res.json())
+            .then(setTasks);
+        }
+      })
+      .finally(() => {
+        setInputValue("");
+        setDescValue(""); // [FIX] Reset description value
+        setShowForm(null);
+      });
+  };
+
+  const handleDone = (type, id) => {
+    fetch(`/api/${type}/done/${id}`, {
+      method: "PUT",
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then(() => {
+        // Refetch data after marking done
+        if (type === "habits") {
+          fetch("/api/habits/show", { credentials: "include" })
+            .then((res) => res.json())
+            .then(setHabits);
+        } else {
+          fetch("/api/tasks/show", { credentials: "include" })
+            .then((res) => res.json())
+            .then(setTasks);
+        }
+      });
+  };
+
+  // [FIX] Added a submit handler for the modal form
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleAdd(showForm === "habit" ? "habits" : "tasks");
+  };
+
+  return (
+	 <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900 text-white px-4 sm:px-6 py-8 sm:py-10">
+    <div className="w-full mx-auto lg:max-w-5xl"> {/* Responsive max width */}
+        <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-300 to-pink-400 drop-shadow">
+                Welcome, {user.email}
+            </h1>
+        </div>
+
+        {/* 📅 Scrollable Calendar Section with Hidden Scrollbar */}
+        <div 
+            className="
+                overflow-x-auto 
+                pb-2 
+                
+                /* Arbitrary classes to hide scrollbar across browsers */
+                [&::-webkit-scrollbar]:hidden 
+                [-ms-overflow-style:none] 
+                [scrollbar-width:none]
+            "
+        >
+            <CalendarBar selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+        </div>
+        {/* -------------------------------------------------------- */}
+
+        <div className="mt-8 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+            
+            {/* Main Content (Habits & Tasks) */}
+            <div className="md:col-span-2 space-y-6">
+                <Section
+                    title="Build Habits"
+                    color="blue"
+                    items={habits}
+                    onAddClick={() => setShowForm("habit")}
+                    onDone={(id) => handleDone("habits", id)}
+                />
+                <Section
+                    title="Tasks"
+                    color="purple"
+                    items={tasks}
+                    onAddClick={() => setShowForm("task")}
+                    onDone={(id) => handleDone("tasks", id)}
+                />
+            </div>
+
+            {/* Right Column Placeholder (Desktop Only) */}
+            <div className="hidden md:block">
+                {/* You can put another sidebar component here */}
+            </div>
+
+            {/* ACTIVITY SUMMARY: Full width section */}
+            <div className="col-span-1 md:col-span-3">
+                <h2 className="text-lg font-bold text-blue-200 mb-2 text-center">
+                    Activity Summary
+                </h2>
+                <div className="text-gray-300 text-sm flex justify-center">
+                    <SumShow />
+                </div>
+            </div>
+        </div>
+
+        {/* Add Habit/Task Modal */}
+        {showForm && (
+            <div className="fixed inset-0 flex items-center justify-center p-4 bg-black/60 z-50">
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl w-full max-w-md shadow-2xl">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-bold">
+                            Add New {showForm === "habit" ? "Habit" : "Task"}
+                        </h2>
+                        <button
+                            className="text-gray-300 hover:text-white"
+                            onClick={() => setShowForm(null)}
+                        >
+                            <XMarkIcon className="w-6 h-6" />
+                        </button>
+                    </div>
+                    
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <input
+                            type="text"
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            placeholder={`Enter ${showForm === "habit" ? "habit" : "task"} name`}
+                            className="w-full p-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                        />
+                        <input
+                            type="text"
+                            value={descValue}
+                            onChange={(e) => setDescValue(e.target.value)}
+                            placeholder="Enter description (optional)"
+                            className="w-full p-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                        />
+                        <button
+                            type="submit"
+                            className="w-full px-5 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 font-semibold hover:from-green-400 hover:to-blue-400 transition"
+                        >
+                            Add
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        )}
+    </div>
+</div>
+  );
+} // <--- This now correctly closes the Dashboard component
+
+/* Components */
+
+// [FIX] Refactored to use a lookup object for Tailwind-safe dynamic classes
+const colorClasses = {
+	blue: {
+		text: "text-blue-200",
+		from: "from-blue-500",
+		to: "to-purple-500"
+	},
+	purple: {
+		text: "text-purple-200",
+		from: "from-purple-500",
+		to: "to-blue-500" // Changed for variety, was 'to-purple-500'
+	}};
+
+function Section({ title, color, items, onAddClick, onDone }) {
+  const colors = colorClasses[color] || colorClasses.blue; // Fallback to blue
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-2">
+        <span className={`font-bold text-xl ${colors.text}`}>{title}</span>
+        <button
+          className="flex items-center gap-1 px-3 py-1 text-sm rounded-lg bg-white/10 hover:bg-white/20 border border-white/20"
+          onClick={onAddClick}
+        >
+          <PlusIcon className="w-4 h-4" /> Add
+        </button>
+      </div>
+
+      <div className="rounded-2xl shadow-xl bg-white/10 backdrop-blur-sm p-4 border border-white/20">
+        {items.length ? (
+          <div className="divide-y divide-white/10">
+            {items.map((item) => (
+              <div
+                key={item._id}
+                className="flex justify-between items-center py-3 px-3 hover:bg-white/10 rounded-xl transition"
+              >
+                <span
+                  className={`font-medium text-lg ${
+                    item.completed ? "line-through text-gray-400" : colors.text
+                  }`}
+                >
+                  {item.title}
+                </span>
+                <button
+                  className={`px-3 py-1 rounded-lg text-sm font-bold text-white shadow
+                    ${
+                      item.completed
+                        ? "bg-green-500/80 cursor-default"
+                        : `bg-gradient-to-r ${colors.from} ${colors.to} hover:from-green-400 hover:to-blue-400`
+                    }`}
+                  onClick={() => !item.completed && onDone(item._id)} // Prevent re-clicking
+                  disabled={item.completed}
+                >
+                  {item.completed ? (
+                    <span className="inline-flex items-center gap-1">
+                      <CheckCircleIcon className="w-5 h-5 text-white" /> Done
+                    </span>
+                  ) : (
+                    "Mark Done"
+                  )}
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center text-gray-300 py-10 italic">
+            No {title.toLowerCase()} yet.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// [FIX] Implemented the CalendarBar component
+function CalendarBar({ selectedDate, setSelectedDate }) {
+  const [weekDates, setWeekDates] = useState([]);
+
+  useEffect(() => {
+    const dates = [];
+    const today = new Date(selectedDate);
+    const dayOfWeek = today.getDay();
+
+    // Start from Sunday of the current week
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - dayOfWeek);
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + i);
+      dates.push(date);
+    }
+    setWeekDates(dates);
+  }, [selectedDate]); // Re-calculate week if selectedDate changes
+
+  const isToday = (date) => {
+    return date.toDateString() === new Date().toDateString();
+  }
+
+  return (
+    <div className="flex justify-between items-center bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 shadow-lg">
+      {weekDates.map((date) => {
+        const dateStr = date.toDateString();
+        const isActive = dateStr === selectedDate;
+        
+        return (
+          <button
+            key={dateStr}
+            onClick={() => setSelectedDate(dateStr)}
+            className={`flex flex-col items-center justify-center w-16 h-20 rounded-xl transition-all
+              ${isActive
+                ? "bg-gradient-to-br from-blue-500 to-purple-500 shadow-lg"
+                : "hover:bg-white/20"
+              }
+              ${isToday(date) && !isActive ? "border-2 border-blue-300" : ""}
+            `}
+          >
+            <span className="text-sm font-medium text-gray-200">
+              {getDayName(date)}
+            </span>
+            <span className="text-2xl font-bold mt-1">
+              {date.getDate()}
+            </span>
+            {isToday(date) && (
+              <span className="text-xs text-blue-300 font-bold">Today</span>
+            )}
+          </button>
+        );
+      })}
+    </div>
+  );
+}

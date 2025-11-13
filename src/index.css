@@ -1,0 +1,25 @@
+@import "tailwindcss";
+/*@config "../tailwind.config.js";*/
+
+/* Theme palette */
+@theme {
+  --color-primary-light: #a78bfa;
+  --color-primary: #7c3aed;
+  --color-primary-dark: #4c1d95;
+
+  --color-secondary-light: #60a5fa;
+  --color-secondary: #3b82f6;
+  --color-secondary-dark: #1e40af;
+
+  --color-bg: #0f172a;      /* dark navy background */
+  --color-text: #f1f5f9;    /* soft light text */
+}
+
+/* Utility layer */
+@layer utilities {
+  .bg-primary { background-color: var(--color-primary); }
+  .bg-secondary { background-color: var(--color-secondary); }
+  .text-primary { color: var(--color-primary); }
+  .text-secondary { color: var(--color-secondary); }
+}
+
