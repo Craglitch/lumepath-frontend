@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { motion } from "framer-motion";
 import ItemCard from "../components/ItemCard";
 
@@ -9,22 +8,39 @@ export default function Habits() {
   const [summary, setSummary] = useState({ total: 0, done: 0, percent: 0 });
 
   const fetchHabits = async () => {
-    const res = await axios.get("/api/habits/show");
-    setHabits(res.data);
-    const sum = await axios.get("/api/habits/summary");
-    setSummary(sum.data);
+    const habitsRes = await fetch("/api/habits/show", { 
+      credentials: "include" 
+    });
+    const habitsData = await habitsRes.json();
+    setHabits(habitsData);
+    
+    const summaryRes = await fetch("/api/habits/summary", { 
+      credentials: "include" 
+    });
+    const summaryData = await summaryRes.json();
+    setSummary(summaryData);
   };
 
   const addHabit = async (e) => {
     e.preventDefault();
     if (!newHabit.trim()) return;
-    await axios.post("/api/habits/add", { title: newHabit });
+    
+    await fetch("/api/habits/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ title: newHabit }),
+    });
+    
     setNewHabit("");
     fetchHabits();
   };
 
   const handleDone = async (id) => {
-    await axios.put(`/api/habits/done/${id}`);
+    await fetch(`/api/habits/done/${id}`, { 
+      method: "PUT", 
+      credentials: "include" 
+    });
     fetchHabits();
   };
 
@@ -32,6 +48,7 @@ export default function Habits() {
     fetchHabits();
   }, []);
 
+  // ... rest of your JSX remains the same
   return (
     <section className="min-h-screen px-6 py-24 bg-[#0b0b1a] text-white">
       <div className="max-w-4xl mx-auto space-y-10">

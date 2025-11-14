@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { motion } from "framer-motion";
 import ItemCard from "../components/ItemCard";
 
@@ -9,22 +8,35 @@ export default function Tasks() {
   const [summary, setSummary] = useState({ total: 0, done: 0, percent: 0 });
 
   const fetchTasks = async () => {
-    const res = await axios.get("/api/tasks/show"); // missmatched baiki /api/task to /api/tasks (refer mmapi)
-    setTasks(res.data);
-    const sum = await axios.get("/api/tasks/summary"); // missmatched fixed (mmapi)
-    setSummary(sum.data);
+    const res = await fetch("/api/tasks/show", { credentials: "include" });
+    const tasksData = await res.json();
+    setTasks(tasksData);
+    
+    const sumRes = await fetch("/api/tasks/summary", { credentials: "include" });
+    const sumData = await sumRes.json();
+    setSummary(sumData);
   };
 
   const addTask = async (e) => {
     e.preventDefault();
     if (!newTask.trim()) return;
-    await axios.post("/api/tasks/add", { title: newTask }); // missmatched fixed (mmapi)
+    
+    await fetch("/api/tasks/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ title: newTask }),
+    });
+    
     setNewTask("");
     fetchTasks();
   };
 
   const handleDone = async (id) => {
-    await axios.put(`/api/tasks/done/${id}`); // missmatched fixed (mmapi)
+    await fetch(`/api/tasks/done/${id}`, { 
+      method: "PUT", 
+      credentials: "include" 
+    });
     fetchTasks();
   };
 
@@ -32,6 +44,7 @@ export default function Tasks() {
     fetchTasks();
   }, []);
 
+  // ... your JSX remains the same
   return (
     <section className="min-h-screen px-6 py-24 bg-[#0b0b1a] text-white">
       <div className="max-w-4xl mx-auto space-y-10">
