@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import ItemCard from "../components/ItemCard";
-
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 export default function Habits() {
   const [habits, setHabits] = useState([]);
   const [newHabit, setNewHabit] = useState("");
   const [summary, setSummary] = useState({ total: 0, done: 0, percent: 0 });
-
+// global scope variable
   const fetchHabits = async () => {
     const habitsRes = await fetch("/api/habits/show", { 
       credentials: "include" 
@@ -20,7 +20,14 @@ export default function Habits() {
     const summaryData = await summaryRes.json();
     setSummary(summaryData);
   };
+  // Data for ring chart
+  const ringData = [
+    { name: 'Completed', value: summary.done, color: 'url(#completedGradient )'},
+    { name: 'Remaining', value: summary.total - summary.done, color: '#ef4444' }
+  ];
 
+
+  // function 
   const addHabit = async (e) => {
     e.preventDefault();
     if (!newHabit.trim()) return;
@@ -59,6 +66,35 @@ export default function Habits() {
           </h1>
           <p className="text-gray-400">Build consistency one day at a time.</p>
         </div>
+
+       <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+            <h3 className="text-lg font-bold mb-4 text-center">Today's Progress</h3>
+            <ResponsiveContainer width="100%" height={200}>
+              <PieChart>
+                <defs>
+                  <linearGradient id="completedGradient" x1="0" x2="0" y2="1">
+                   <stop offset="0%" stopColor="#22d3ee" />
+                   <stop offset="100%" stopColor="#0ea5e9" />
+                  </linearGradient>
+                </defs>
+                <Pie
+                  data={ringData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={2}
+                  dataKey="value"
+                >
+                  {ringData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
 
         {/* Summary */}
         <motion.div
