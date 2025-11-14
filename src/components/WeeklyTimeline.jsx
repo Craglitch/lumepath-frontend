@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-
+// redeploy trigger
 export default function WeeklyTimeline({ weeklyHistory, currentWeekProgress }) {
   // Combine historical data with current week
   const allWeeks = [...weeklyHistory, { ...currentWeekProgress, isCurrent: true }];
