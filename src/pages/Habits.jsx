@@ -2,7 +2,24 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import ItemCard from "../components/ItemCard";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import WeeklyTimeline from "../components/WeeklyTimeline";
+// Fetch weekly data
+
 export default function Habits() {
+  
+// Add to state
+  const [weeklyHistory, setWeeklyHistory] = useState([]);
+  const [currentWeekProgress, setCurrentWeekProgress] = useState(null);
+
+  const fetchWeeklyData = async () => {
+    const res = await fetch("/api/habits/weekly-stats", { credentials: "include" });
+    const data = await res.json();
+    setWeeklyHistory(data.history);
+    setCurrentWeekProgress(data.currentWeek);
+  };
+
+  
+
   const [habits, setHabits] = useState([]);
   const [newHabit, setNewHabit] = useState("");
   const [summary, setSummary] = useState({ total: 0, done: 0, percent: 0 });
@@ -53,10 +70,10 @@ export default function Habits() {
 
   useEffect(() => {
     fetchHabits();
+    fetchWeeklyData();
   }, []);
 
-  // ... rest of your JSX remains the same
-  return (
+return (
     <section className="min-h-screen px-6 py-24 bg-[#0b0b1a] text-white">
       <div className="max-w-4xl mx-auto space-y-10">
         {/* Header */}
@@ -93,7 +110,14 @@ export default function Habits() {
                 <Tooltip />
                 <Legend />
               </PieChart>
-            </ResponsiveContainer>
+             </ResponsiveContainer>
+          </div>
+          <div>
+             SINI ADA BUG OI ## JANGAN LUPA
+           <WeeklyTimeline 
+            weeklyHistory={weeklyHistory}
+            currentWeekProgress={currentWeekProgress}
+          />
           </div>
 
         {/* Summary */}
