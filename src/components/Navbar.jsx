@@ -12,7 +12,7 @@ export default function Navbar() {
     { name: "Habits", path: "/habits" },
     { name: "Tasks", path: "/tasks" },
     { name: "Community", path: "#" },
-    { name: "Profile", path: "#" },
+    { name: "Profile", path: "/profile" },
   ];
 
   return (
