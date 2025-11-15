@@ -11,7 +11,7 @@ export default function Navbar() {
     { name: "Dashboard", path: "/dashboard" },
     { name: "Habits", path: "/habits" },
     { name: "Tasks", path: "/tasks" },
-    { name: "Community", path: "#" },
+    { name: "Community", path: "/community" },
     { name: "Profile", path: "/profile" },
   ];
 

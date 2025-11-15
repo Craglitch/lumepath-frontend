@@ -9,7 +9,7 @@ import LearnMore from "./pages/Lm";
 import Habits from "./pages/Habits";
 import Tasks from "./pages/Tasks";
 import Profile from "./pages/Profile";
-// import Community from "./pages/Community";
+import Community from "./pages/Community";
 // INI BUAT BENDE BOLEH JADI YANG JANGAN SENTUH
 
 export default function App() {
@@ -45,7 +45,7 @@ export default function App() {
           {/* INI DASHBOARD SAYA SET DIA MASUK JIK ADAH LOG IN*/}
           <Route path="/dashboard"element={user ? <Dashboard /> : <Navigate to="/logon" replace />}/>
 	        <Route path="/learnMore" element={<LearnMore />} />    
-          {/* <Route  path="/community" element={<Community />} />  coming soon noticed here*/}
+          <Route  path="/community" element={<Community />} />
           <Route path="/habits" element={<Habits />} />
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/profile" element={<Profile />}>
