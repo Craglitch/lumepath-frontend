@@ -12,7 +12,7 @@ export default function Profile() {
     });
     
     // Redirect to login
-    navigate("/logon");
+    navigate("/");
   };
 
   return (
