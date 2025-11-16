@@ -1,9 +1,13 @@
 import React from "react";
 import { HeartIcon, ArrowPathRoundedSquareIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartSolid } from "@heroicons/react/24/solid";
+import useAuth from "../../hooks/useAuth";
+
+
 
 export default function PostActions({ post, onLike, onReply, onRepost }) {
-  const isLiked = post.likes?.includes(currentUser?.id); // You'll need user context
+  const { user } = useAuth(); 
+  const isLiked = post.likes?.includes(user?.id); // You'll need user context
 
   return (
     <div className="flex space-x-6 mt-4 text-gray-400">

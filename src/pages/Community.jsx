@@ -1,65 +1,27 @@
+// src/pages/Community.jsx
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import CreatePost from "../components/community/CreatePost";
 import PostCard from "../components/community/PostCard";
+import useAuth from "../hooks/useAuth";
 
 export default function Community() {
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
 
   const fetchPosts = async () => {
     try {
-      const res = await fetch("/api/posts/feed", { credentials: "include" });
-      const data = await res.json();
-      setPosts(data);
-    } catch (error) {
-      console.error("Failed to fetch posts:", error);
-    }
-  };
-
-  const createPost = async (postData) => {
-    try {
-      const formData = new FormData();
-      formData.append("content", postData.content);
-      if (postData.image) formData.append("image", postData.image);
-
-      await fetch("/api/posts/create", {
-        method: "POST",
-        credentials: "include",
-        body: formData,
+      const response = await fetch("/api/posts/feed", {
+        credentials: "include"
       });
-
-      fetchPosts(); // Refresh feed
+      if (response.ok) {
+        const data = await response.json();
+        setPosts(data);
+      }
     } catch (error) {
-      console.error("Failed to create post:", error);
-    }
-  };
-
-  const handleLike = async (postId) => {
-    try {
-      await fetch(`/api/posts/like/${postId}`, {
-        method: "PUT",
-        credentials: "include",
-      });
-      fetchPosts(); // Refresh to update likes
-    } catch (error) {
-      console.error("Failed to like post:", error);
-    }
-  };
-
-  const handleReply = (postId) => {
-    // TODO: Implement reply functionality
-    console.log("Reply to post:", postId);
-  };
-
-  const handleRepost = async (postId) => {
-    try {
-      await fetch(`/api/posts/repost/${postId}`, {
-        method: "POST",
-        credentials: "include",
-      });
-      fetchPosts(); // Refresh feed
-    } catch (error) {
-      console.error("Failed to repost:", error);
+      console.error("Error fetching posts:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -67,45 +29,67 @@ export default function Community() {
     fetchPosts();
   }, []);
 
+  const handleLike = async (postId) => {
+    if (!user) return;
+    
+    try {
+      const response = await fetch(`/api/posts/like/${postId}`, {
+        method: "PUT",
+        credentials: "include"
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        // Update local state
+        setPosts(posts.map(post => 
+          post._id === postId 
+            ? { 
+                ...post, 
+                likes: result.liked 
+                  ? [...post.likes, user._id] 
+                  : post.likes.filter(id => id.toString() !== user._id.toString())
+              }
+            : post
+        ));
+      }
+    } catch (error) {
+      console.error("Error liking post:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500"></div>
+      </div>
+    );
+  }
+
   return (
-    <section className="min-h-screen px-6 py-24 bg-[#0b0b1a] text-white">
-      <div className="max-w-2xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-900 text-white p-4">
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8">Community</h1>
         
-        {/* Header */}
-        <div className="text-center">
-          <h1 className="text-4xl sm:text-5xl font-extrabold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
-            Community
-          </h1>
-          <p className="text-gray-400">Share your journey and connect with others</p>
-        </div>
-
-        {/* Create Post Component */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <CreatePost onCreatePost={createPost} />
-        </motion.div>
-
-        {/* Posts Feed */}
         <div className="space-y-4">
-          {posts.length > 0 ? (
-            posts.map((post) => (
-              <PostCard 
-                key={post._id} 
-                post={post} 
-                onLike={handleLike}
-                onReply={handleReply}
-                onRepost={handleRepost}
-              />
-            ))
-          ) : (
-            <div className="text-center text-gray-400 py-10">
-              No posts yet. Be the first to share!
+          {posts.map((post) => (
+            <PostCard
+              key={post._id}
+              post={post}
+              onLike={handleLike}
+              onReply={() => console.log("Reply to:", post._id)}
+              onRepost={() => console.log("Repost:", post._id)}
+            />
+          ))}
+          
+          {posts.length === 0 && (
+            <div className="text-center text-gray-400 py-8">
+              No posts yet. Be the first to share something!
             </div>
           )}
         </div>
+        
+        <CreatePost onCreatePost={fetchPosts} />
       </div>
-    </section>
+    </div>
   );
 }
