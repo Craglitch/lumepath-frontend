@@ -106,7 +106,7 @@ export default function LearnMore() {
 
           <div className="mt-8 flex gap-4 justify-center">
             <a
-              href="#"
+              href="https://drive.google.com/file/d/15k6e6qJlLn_w58L1sxyIFepZpy-Ozc5n/view?usp=sharing"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 hover:scale-[1.02] transition transform shadow-lg"
             >
               <Download className="w-5 h-5" />
