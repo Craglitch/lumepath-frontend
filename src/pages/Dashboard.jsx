@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircleIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid} from "recharts";
+import AIChatBox from "../components/AIChatBox";
+import AIChatRedirect from "../components/AIChatRedirect";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -12,6 +14,11 @@ export default function Dashboard() {
   const [showForm, setShowForm] = useState(null); // 'habit' | 'task' | null
   const [inputValue, setInputValue] = useState("");
   const [descValue, setDescValue] = useState("");
+
+  const handleRedirect = () => {
+    // Your navigation logic here
+    console.log("Redirect to AI chat");
+  };
 
   // Authenticate user
   useEffect(() => {
@@ -97,6 +104,9 @@ export default function Dashboard() {
             taskSummary={taskSummary}
           />
         </div>
+        <div>
+          <AIChatBox />
+        </div>
 
         {/* ADD FORM MODAL */}
         {showForm && (
@@ -146,6 +156,7 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+
     </div>
   );
 }
