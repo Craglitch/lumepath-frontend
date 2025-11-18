@@ -4,6 +4,9 @@ import { CheckCircleIcon, PlusIcon, XMarkIcon } from "@heroicons/react/24/solid"
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid} from "recharts";
 import AIChatBox from "../components/AIChatBox";
 import AIChatRedirect from "../components/AIChatRedirect";
+import AchievementBadge from "../components/AchievementSystem";
+
+
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -107,6 +110,7 @@ export default function Dashboard() {
         <div>
           <AIChatBox />
         </div>
+        <div><AchievementBadge /></div>
 
         {/* ADD FORM MODAL */}
         {showForm && (
