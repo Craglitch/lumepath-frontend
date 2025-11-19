@@ -99,8 +99,7 @@ export default function LearnMore() {
             LumePath — Evolve your routine, elevate your life.
           </h1>
           <p className="max-w-3xl mx-auto text-lg text-gray-300">
-            A versatile home for your habits, tasks, communities — and aesthetic
-            life tools like <strong>Outfit Planner</strong>. Designed for motion,
+            A versatile home for your habits, tasks, communities — and aesthetic <strong>life tools</strong>. Designed for motion,
             clarity, and personal growth.
           </p>
 
@@ -176,8 +175,8 @@ export default function LearnMore() {
           />
           <WhyCard
             icon={<BookOpen className="w-6 h-6 text-purple-300" />}
-            title="Built for Learning"
-            text="Manuals, micro-guides, and developer docs — everything to customize your path."
+            title="Built for adaptability."
+            text="Adaptation make for user through machine learning."
           />
         </motion.div>
 
@@ -200,8 +199,8 @@ export default function LearnMore() {
             link="#"
           />
           <DocCard
-            title="Developer Docs"
-            desc="Endpoints, webhooks, and extensibility for building on LumePath."
+            title="New technology"
+            desc="AI integration to solve our problem."
             link="#"
           />
         </motion.div>
