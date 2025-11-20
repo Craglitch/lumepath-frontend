@@ -29,7 +29,7 @@ export default function Home() {
           transition={{ duration: 1.2 }}
           className="text-5xl sm:text-6xl font-extrabold mb-6 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-blue-400 to-sky-400 drop-shadow-[0_0_20px_rgba(99,102,241,0.4)]"
         >
-          Prototype v0.1.4 patch
+          Lumepath prototype
         </motion.h1>
 
         <motion.p
