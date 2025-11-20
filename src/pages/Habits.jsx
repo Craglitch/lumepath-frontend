@@ -113,7 +113,6 @@ return (
              </ResponsiveContainer>
           </div>
           <div>
-             SINI ADA BUG OI ## JANGAN LUPA
            <WeeklyTimeline 
             weeklyHistory={weeklyHistory}
             currentWeekProgress={currentWeekProgress}
