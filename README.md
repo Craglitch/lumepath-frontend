@@ -1,16 +1,18 @@
-# React + Vite
+# Lumepath front end (Unmaintained / Discarded)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Status:** This project is no longer maintained. It is kept for reference only.
 
-Currently, two official plugins are available:
+## Overview
+Lumepath was a **3-month full-stack web application** developed for a competition. The app implemented a complete **CRUD workflow** with user authentication and interactive UI elements.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
+- User authentication with signup, login, and session management.  
+- CRUD operations for core application data (habits/tasks).  
+- Interactive frontend with animations and responsive design.  
+- Backend built with Express.js and MongoDB (local).
 
-## React Compiler
+## Purpose
+The project was created as a **competition entry** to demonstrate full-stack development skills, including backend APIs, frontend interactivity, and state management.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Reason for Discontinuation
+Development has been halted. The project is now kept as a reference for CRUD architecture and rapid full-stack prototyping.
